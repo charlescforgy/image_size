@@ -88,37 +88,42 @@ else:
         if img.lower().split(".")[-1] in SUPPORTED_IMAGE_TYPES
     )
 
+def main():
+    if args.multithread:
+    
+        from multiprocessing import Pool
+    
+        def get_image_shape(name):
+            return name, cv2.imread(join(image_dir, name)).shape
 
-if args.multithread:
-
-    from multiprocessing import Pool
-
-    def get_image_shape(name):
-        return name, cv2.imread(join(image_dir, name)).shape
-
-    if __name__ == "__main__":
-        print("Creating dictionary...")
-        with Pool(None) as p:
-            image_size_list = p.map(get_image_shape, image_names)
-        image_size_dict = dict(image_size_list)
-        print(f"Parsing complete, dumping results into pickle file: {args.dict_name}.")
-        with open(args.dict_name, "wb") as write_file:
+        if __name__ == "__main__":
+            print("Creating dictionary...")
+            with Pool(None) as p:
+                image_size_list = p.map(get_image_shape, image_names)
+            image_size_dict = dict(image_size_list)
+            print(f"Parsing complete, dumping results into pickle file: {args.dict_name}.")
+            with open(args.dict_name, "wb") as write_file:
             pickle.dump(image_size_dict, write_file)
 
 
-else:
-    print(f"Parsing images in {image_dir}")
+    else:
+        print(f"Parsing images in {image_dir}")
+    
+        image_size_list = []
+        for name in tqdm(image_names):
+            # We use cv2.imread as it is the fastest option. If you don't have OpenCV installed,
+            # PIL.Image.open is only slightly slower, and can be used instead with minimal slowdown.
+            # imageio.imread is substantially slower, and is not recommended.
+            image = cv2.imread(join(image_dir, name))
+            image_size_list.append(image.shape)
+        print("Creating dictionary...")
+        image_size_dict = {name: dim for name, dim in zip(image_names, image_size_list)}
 
-    image_size_list = []
-    for name in tqdm(image_names):
-        # We use cv2.imread as it is the fastest option. If you don't have OpenCV installed,
-        # PIL.Image.open is only slightly slower, and can be used instead with minimal slowdown.
-        # imageio.imread is substantially slower, and is not recommended.
-        image = cv2.imread(join(image_dir, name))
-        image_size_list.append(image.shape)
-    print("Creating dictionary...")
-    image_size_dict = {name: dim for name, dim in zip(image_names, image_size_list)}
+        print(f"Parsing complete, dumping results into pickle file: {args.dict_name}.")
+        with open(args.dict_name, "wb") as write_file:
 
-    print(f"Parsing complete, dumping results into pickle file: {args.dict_name}.")
-    with open(args.dict_name, "wb") as write_file:
-        pickle.dump(image_size_dict, write_file)
+
+            pickle.dump(image_size_dict, write_file)
+
+if __name__ == '__main__':
+    main()
