@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 s = setup(
     name="image-sizes",
-    version="1.0.0",
+    version="1.1.0",
     license="MIT",
     description="Creates Python Dictionary of image dimensions.",
     url="https://github.com/charlescforgy/image_size",

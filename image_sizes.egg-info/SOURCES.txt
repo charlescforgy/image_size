@@ -1,5 +1,7 @@
 README.md
 setup.py
+image_sizes/__init__.py
+image_sizes/get_image_sizes.py
 image_sizes.egg-info/PKG-INFO
 image_sizes.egg-info/SOURCES.txt
 image_sizes.egg-info/dependency_links.txt
